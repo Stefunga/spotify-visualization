@@ -1,9 +1,15 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
+import Player from "./player";
+import * as $ from "jquery";
 import "./App.css";
 export const authEndpoint = 'https://accounts.spotify.com/authorize';
 var Spotify = require('spotify-web-api-js');
+
+
+
 // Replace with your app's client ID, redirect URI and desired scopes
+const clientId = "fc234cc105d4466184c315ff51fd5b16";
 const redirectUri = "http://localhost:3000/";
 const scopes = [
   "user-read-currently-playing",
@@ -34,6 +40,8 @@ class App extends Component {
       spotifyApi.setAccessToken(_token);
       spotifyApi.getUserPlaylists()
       .then((response) => this.setState({playlists:response["items"]}));
+      spotifyApi.getMyCurrentPlayingTrack()
+      .then((response) => this.setState({item:response}));
       this.setState({
         token: _token
       });
@@ -47,9 +55,11 @@ render() {
         [
           this.state.playlists ?
           (
-            <ol>
-              {this.state.playlists.map(reptile => <li>{reptile.id}</li>)}
-            </ol>
+            <Player
+              item={this.state.item}
+              is_playing={this.state.is_playing}
+              progress_ms={this.progress_ms}
+            />
           )
           :
           ( console.log("outside"))
