@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
-import Player from "./player";
 import * as $ from "jquery";
 import "./App.css";
 export const authEndpoint = 'https://accounts.spotify.com/authorize';
@@ -31,6 +30,9 @@ const hash = window.location.hash
     return initial;
   }, {});
 window.location.hash = "";
+function handleClick(e) {
+  console.log('The link was clicked.',e);
+}
 class App extends Component {
   componentDidMount() {
     // Set token
@@ -38,10 +40,10 @@ class App extends Component {
     if (_token) {
       // Set token
       spotifyApi.setAccessToken(_token);
+      // spotifyApi.getPlaylistTracks('5ujyl8wg80iaDfYKsrZmIJ')
+
       spotifyApi.getUserPlaylists()
       .then((response) => this.setState({playlists:response["items"]}));
-      spotifyApi.getMyCurrentPlayingTrack()
-      .then((response) => this.setState({item:response}));
       this.setState({
         token: _token
       });
@@ -55,11 +57,12 @@ render() {
         [
           this.state.playlists ?
           (
-            <Player
-              item={this.state.item}
-              is_playing={this.state.is_playing}
-              progress_ms={this.progress_ms}
-            />
+            <div>
+              <ol>
+                {this.state.playlists.map(playlist => <button onClick={() => handleClick(playlist.id)}>{playlist.name}</button>)}
+              </ol>
+              <iframe src="https://open.spotify.com/embed/track/4KW1lqgSr8TKrvBII0Brf8" style={{display:'hidden!important'}} width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+            </div>
           )
           :
           ( console.log("outside"))
