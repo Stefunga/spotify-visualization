@@ -81,8 +81,9 @@ render() {
         {
           this.state ? [
             [this.state.playlist_tracks ?
-                  (
+                  (<div >
                     <iframe id='spotify-player' src={`https://open.spotify.com/embed/track/${this.state.playlist_tracks[Math.floor(Math.random() * this.state.playlist_tracks.length)]["track"]["id"]}`} style={{display:'hidden!important'}} width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                   </div>
                   )
                   :
                   (
