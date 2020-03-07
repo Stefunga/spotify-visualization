@@ -30,8 +30,10 @@ const hash = window.location.hash
     return initial;
   }, {});
 window.location.hash = "";
-function handleClick(e) {
-  console.log('The link was clicked.',e);
+function handleClick(current, e) {
+  console.log('The button was clicked',e);
+  spotifyApi.getPlaylistTracks(e)
+  .then((response) => current.setState({playlist_tracks:response["items"]}));
 }
 class App extends Component {
   componentDidMount() {
@@ -59,9 +61,8 @@ render() {
           (
             <div>
               <ol>
-                {this.state.playlists.map(playlist => <button onClick={() => handleClick(playlist.id)}>{playlist.name}</button>)}
+                {this.state.playlists.map(playlist => <button onClick={() => handleClick(this,playlist.id)}>{playlist.name}</button>)}
               </ol>
-              <iframe src="https://open.spotify.com/embed/track/4KW1lqgSr8TKrvBII0Brf8" style={{display:'hidden!important'}} width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
             </div>
           )
           :
@@ -76,6 +77,23 @@ render() {
         </a>
       )}
       </header>
+      <div>
+        {
+          this.state ? [
+            [this.state.playlist_tracks ?
+                  (
+                    <iframe id='spotify-player' src={`https://open.spotify.com/embed/track/${this.state.playlist_tracks[Math.floor(Math.random() * this.state.playlist_tracks.length)]["track"]["id"]}`} style={{display:'hidden!important'}} width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                  )
+                  :
+                  (
+                    console.log("top")
+                  )
+            ]
+          ]
+        :
+          console.log('yeep')
+        }
+      </div>
     </div>
   );
   }
