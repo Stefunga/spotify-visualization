@@ -13,6 +13,7 @@ const redirectUri = "http://localhost:3000/";
 const scopes = [
   "user-read-currently-playing",
   "user-read-playback-state",
+  "streaming"
 ];
 
 var spotifyApi = new Spotify();
@@ -35,6 +36,7 @@ function handleClick(current, e) {
   spotifyApi.getPlaylistTracks(e)
   .then((response) => current.setState({playlist_tracks:response["items"]}));
 }
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
 class App extends Component {
   componentDidMount() {
     // Set token
@@ -50,6 +52,36 @@ class App extends Component {
         token: _token
       });
     }
+
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      const token = '[My Spotify Web API access token]';
+      const player = new Spotify.Player({
+        name: 'Web Playback SDK Quick Start Player',
+        getOAuthToken: cb => { cb(token); }
+      });
+
+      // Error handling
+      player.addListener('initialization_error', ({ message }) => { console.error(message); });
+      player.addListener('authentication_error', ({ message }) => { console.error(message); });
+      player.addListener('account_error', ({ message }) => { console.error(message); });
+      player.addListener('playback_error', ({ message }) => { console.error(message); });
+
+      // Playback status updates
+      player.addListener('player_state_changed', state => { console.log(state); });
+
+      // Ready
+      player.addListener('ready', ({ device_id }) => {
+        console.log('Ready with Device ID', device_id);
+      });
+
+      // Not Ready
+      player.addListener('not_ready', ({ device_id }) => {
+        console.log('Device ID has gone offline', device_id);
+      });
+
+      // Connect to the player!
+      player.connect();
+    };
   }
 render() {
   return (
@@ -83,6 +115,7 @@ render() {
             [this.state.playlist_tracks ?
                   (<div >
                     <iframe id='spotify-player' src={`https://open.spotify.com/embed/track/${this.state.playlist_tracks[Math.floor(Math.random() * this.state.playlist_tracks.length)]["track"]["id"]}`} style={{display:'hidden!important'}} width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                   , {spotifyApi.play};
                    </div>
                   )
                   :
@@ -94,6 +127,11 @@ render() {
         :
           console.log('yeep')
         }
+      </div>
+      <div>
+        <h1>
+        test
+        </h1>
       </div>
     </div>
   );
